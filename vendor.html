@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7a0000">
+  <title>PUPick Vendor Portal</title>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap">
+  <link rel="stylesheet" href="vendor.css">
+</head>
+<body>
+
+  <!-- ==================== 1. VENDOR LOGIN ==================== -->
+  <section id="login" class="login-wrap">
+    <form class="login-card" id="loginForm" novalidate>
+      <div class="seal" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg>
+      </div><!-- replace with the PUP seal image: <img src="assets/pup-seal.png" alt="PUP seal"> -->
+      <h1>Integrated Smart Ordering Kiosk System</h1>
+      <h2>Vendor Portal</h2>
+
+      <label for="user">Username</label>
+      <div class="field">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <input id="user" autocomplete="username" placeholder="Enter username">
+      </div>
+
+      <label for="pass">Password</label>
+      <div class="field">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        <input id="pass" type="password" autocomplete="current-password" placeholder="Enter password">
+        <button type="button" class="eye" id="togglePass" aria-label="Show password">
+          <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <div class="login-row">
+        <label class="check"><input type="checkbox" id="remember"> Remember Me</label>
+        <a href="#" id="forgot">Forgot Password?</a>
+      </div>
+
+      <p class="form-error" id="loginError" role="alert" hidden></p>
+      <button class="btn-main" type="submit">
+        <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5"/></svg>LOGIN
+      </button>
+
+      <div class="or"><span>OR</span></div>
+      <a class="btn-outline" href="index.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6"/></svg>KIOSK MODE PREVIEW
+      </a>
+      <p class="copy">© 2024 PUP. All rights reserved.</p>
+    </form>
+  </section>
+
+  <!-- ==================== 2. VENDOR DASHBOARD ==================== -->
+  <div id="app" class="app" hidden>
+
+    <aside class="side">
+      <div class="brand">
+        <div class="brand-star"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9 5.9 20.4l1.5-6.8L2.2 9l6.9-.7z"/></svg></div>
+        <div><b>PUP</b><small>VENDOR PORTAL</small></div>
+      </div>
+      <nav id="nav" aria-label="Vendor navigation"></nav>
+      <button class="nav-item logout" id="logout">
+        <svg viewBox="0 0 24 24"><path d="M14 17l5-5-5-5M19 12H8M10 4H5a2 2 0 00-2 2v12a2 2 0 002 2h5"/></svg>Logout
+      </button>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <h1>Welcome, <span id="vName">Vendor</span>!</h1>
+          <p class="clock" id="clock"></p>
+        </div>
+        <div class="top-right">
+          <button class="rate-chip" id="rateChip" aria-label="Stall rating. Open Feedback"></button>
+          <button class="bell" id="bell" aria-label="Notifications">
+            <svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 3 7 3 7H3s3-1 3-7zM10 20a2 2 0 004 0"/></svg>
+            <span class="badge" id="bellCount" hidden>0</span>
+          </button>
+          <div class="user"><span class="avatar" aria-hidden="true"></span><span id="vName2">Vendor Name</span></div>
+        </div>
+      </header>
+
+      <div class="page" id="page-dashboard">
+      <section class="stats" id="stats" aria-label="Order summary"></section>
+
+      <section class="orders">
+        <h2>Order Management</h2>
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="search" placeholder="Search orders..." aria-label="Search orders">
+          </div>
+          <select id="status" aria-label="Filter by status">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="claimed">Claimed</option>
+          </select>
+          <select id="sort" aria-label="Sort orders">
+            <option value="time">Sort by Time</option>
+            <option value="queue">Sort by Queue</option>
+          </select>
+          <button class="refresh" id="refresh" aria-label="Refresh orders">
+            <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 00-14-4L4 9M4 4v5h5M4 13a8 8 0 0014 4l2-2M20 20v-5h-5"/></svg>
+          </button>
+        </div>
+        <div class="list" id="list" aria-live="polite"></div>
+        <button class="more" id="more">View More Orders
+          <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </section>
+      </div>
+
+      <!-- ==================== PAGE: QUEUE ==================== -->
+      <section class="page" id="page-queue" hidden>
+        <h2 class="page-title">Queue</h2>
+        <div class="board">
+          <div class="col">
+            <h3>In the Kitchen <span class="count" id="kitchenCount">0</span></h3>
+            <div class="tiles" id="kitchen"></div>
+          </div>
+          <div class="col">
+            <h3>Ready for Pickup <span class="count" id="readyCount">0</span></h3>
+            <div class="tiles" id="readyBoard"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PAGE: ORDERS ==================== -->
+      <section class="page" id="page-orders" hidden>
+        <h2 class="page-title">Orders</h2>
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="oSearch" placeholder="Search all orders..." aria-label="Search all orders">
+          </div>
+          <select id="oStatus" aria-label="Filter by status">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="claimed">Claimed</option>
+          </select>
+          <select id="oSource" aria-label="Filter by source">
+            <option value="all">All Sources</option>
+            <option value="kiosk">Kiosk</option>
+            <option value="mobile">Mobile</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="otable">
+            <thead><tr><th>Order</th><th>Queue</th><th>Customer</th><th>Items</th><th>Payment</th><th>Source</th><th>Time</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody id="oBody"></tbody>
+          </table>
+        </div>
+        <p class="table-note" id="oNote"></p>
+      </section>
+
+      <!-- ==================== PAGE: MENU ==================== -->
+      <section class="page" id="page-menu" hidden>
+        <div class="page-head"><h2 class="page-title">Menu</h2><div class="head-btns"><button class="btn-outline add" id="cAdd">+ Add Category</button><button class="btn-main add" id="mAdd">+ Add Item</button></div></div>
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="mSearch" placeholder="Search menu..." aria-label="Search menu">
+          </div>
+          <select id="mFilter" aria-label="Filter by category"><option value="all">All Categories</option></select>
+        </div>
+        <div class="chips" id="mCats" aria-label="Menu categories"></div>
+        <div class="table-wrap">
+          <table class="otable">
+            <thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Available</th><th>Actions</th></tr></thead>
+            <tbody id="mBody"></tbody>
+          </table>
+        </div>
+        <p class="table-note" id="mNote"></p>
+      </section>
+
+      <!-- ==================== PAGE: SALES ==================== -->
+      <section class="page" id="page-sales" hidden>
+        <h2 class="page-title">Sales</h2>
+        <div class="stats" id="salesStats"></div>
+        <div class="two">
+          <div class="panel"><h3>Sales by Hour</h3><div class="bars" id="hourBars"></div></div>
+          <div class="panel"><h3>Top Items</h3><ol class="top" id="topItems"></ol></div>
+        </div>
+      </section>
+
+      <!-- ==================== PAGE: FEEDBACK ==================== -->
+      <section class="page" id="page-feedback" hidden>
+        <h2 class="page-title">Feedback</h2>
+        <div class="two eq">
+          <div class="panel"><h3>Stall Rating</h3><div class="fb-sum" id="fbSummary"></div><div class="dist" id="fbDist"></div></div>
+          <div class="panel"><h3>Rating Breakdown</h3><ul class="top" id="fbCats"></ul></div>
+        </div>
+        <div class="panel">
+          <h3>Ratings by Menu Item</h3>
+          <ul class="top" id="fbItems"></ul>
+          <p class="table-note">Average rating of the reviewed orders that included each item.</p>
+        </div>
+        <h3 class="sub">Customer Reviews</h3>
+        <div class="list" id="fbList"></div>
+      </section>
+
+      <!-- ==================== PAGE: SETTINGS ==================== -->
+      <section class="page" id="page-settings" hidden>
+        <h2 class="page-title">Settings</h2>
+        <form class="panel set" id="setForm">
+          <label for="sName">Stall name</label>
+          <input id="sName" maxlength="100">
+          <label for="sDesc">Description</label>
+          <input id="sDesc" maxlength="255">
+          <div class="row2">
+            <div><label for="sPrep">Prep time (minutes)</label><input id="sPrep" type="number" min="1" max="120"></div>
+            <div><label for="sStatus">Stall status</label>
+              <select id="sStatus"><option value="open">Open</option><option value="closed">Closed</option></select></div>
+          </div>
+          <label for="sQr">Payment QR code (e-wallet)</label>
+          <img id="qrPreview" class="qr" alt="Payment QR preview" hidden>
+          <input id="sQr" type="file" accept="image/*">
+          <button class="btn-main" type="submit">Save Changes</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== RECEIPT VIEWER ==================== -->
+  <div class="overlay" id="receipt" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+      <div class="m-head"><h2 id="rTitle">Payment Receipt</h2><button class="m-x" id="rClose" aria-label="Close">&times;</button></div>
+      <div class="m-body">
+        <div class="m-img" id="rBox"><img id="rImg" alt="Customer's payment screenshot"><p>Click the image to zoom</p></div>
+        <dl class="m-info" id="rInfo"></dl>
+      </div>
+      <div class="m-foot"><button class="btn-outline" id="rCancel">Close</button><button class="btn-main" id="rAccept">Payment Verified: Accept Order</button></div>
+    </div>
+  </div>
+
+  <!-- ==================== MENU ITEM FORM & REMOVE CONFIRMATION ==================== -->
+  <div class="overlay" id="menuModal" hidden>
+    <form class="modal" id="menuForm" role="dialog" aria-modal="true" aria-labelledby="mTitle" novalidate>
+      <div class="m-head"><h2 id="mTitle">Add Menu Item</h2><button type="button" class="m-x" id="mClose" aria-label="Close">&times;</button></div>
+      <div class="m-form set">
+        <label for="mName">Item name</label>
+        <input id="mName" maxlength="100">
+        <label for="mDesc">Description</label>
+        <input id="mDesc" maxlength="255">
+        <div class="row2">
+          <div><label for="mCat">Category</label><select id="mCat"></select></div>
+          <div><label for="mPrice">Price (₱)</label><input id="mPrice" type="number" min="1" max="9999.99" step="0.01"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="mAvail" checked> Available to order on the kiosk</label>
+        <p class="form-error" id="mError" role="alert" hidden></p>
+      </div>
+      <div class="m-foot"><button type="button" class="btn-outline" id="mCancel">Cancel</button><button class="btn-main" type="submit">Save Item</button></div>
+    </form>
+  </div>
+
+  <div class="overlay" id="catModal" hidden>
+    <form class="modal small" id="catForm" role="dialog" aria-modal="true" aria-labelledby="cTitle" novalidate>
+      <div class="m-head"><h2 id="cTitle">Add Category</h2><button type="button" class="m-x" id="cClose" aria-label="Close">&times;</button></div>
+      <div class="m-form set">
+        <label for="cName">Category name</label>
+        <input id="cName" maxlength="100" placeholder="e.g. Pasta">
+        <p class="form-error" id="cError" role="alert" hidden></p>
+      </div>
+      <div class="m-foot"><button type="button" class="btn-outline" id="cCancel">Cancel</button><button class="btn-main" type="submit">Add Category</button></div>
+    </form>
+  </div>
+
+  <div class="overlay" id="delModal" hidden>
+    <div class="modal small" role="alertdialog" aria-modal="true" aria-labelledby="dTitle" aria-describedby="dText">
+      <div class="m-head"><h2 id="dTitle">Remove menu item?</h2></div>
+      <p class="m-text" id="dText"></p>
+      <div class="m-foot"><button class="btn-outline" id="dCancel">Cancel</button><button class="btn-main danger" id="dConfirm">Remove</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="api.js"></script>
+  <script src="vendor.js"></script>
+</body>
+</html>
