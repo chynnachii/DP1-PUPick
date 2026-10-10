@@ -184,12 +184,19 @@ function renderSales() {
   done.forEach(o => { const h = new Date(o.created_at).getHours(); hours[h] = (hours[h] || 0) + o.total; });
   const hs = Object.keys(hours).map(Number);
   if (hs.length) {
-    const lo = Math.min(...hs), hi = Math.max(...hs), max = Math.max(...Object.values(hours));
-    let html = '';
-    for (let h = lo; h <= hi; h++) {
-      const val = hours[h] || 0;
-      html += `<div class="bar"><span>${val ? peso(val) : ''}</span><i style="height:${Math.round(val / max * 70)}%"></i><small>${new Date(2000, 0, 1, h).toLocaleTimeString('en-US', { hour: 'numeric' })}</small></div>`;
-    }
+    
+        const lo = Math.min(...hs), hi = Math.max(...hs), max = Math.max(...Object.values(hours));
+    const fmt = h => new Date(2000, 0, 1, h).toLocaleTimeString('en-US', { hour: 'numeric' });
+    const pts = [];
+    for (let h = lo; h <= hi; h++) pts.push({ h, val: hours[h] || 0 });
+    pts.forEach((p, i) => { p.x = pts.length > 1 ? i / (pts.length - 1) * 100 : 50; p.y = 100 - p.val / max * 80; });
+    const line = pts.map(p => `${p.x},${p.y}`).join(' ');
+    const dots = pts.map(p => `<span class="dot" style="left:${p.x}%;top:${p.y}%" title="${fmt(p.h)}: ${peso(p.val)}"><b>${p.val ? peso(p.val) : ''}</b></span>`).join('');
+    const xl = pts.map(p => `<small style="left:${p.x}%">${fmt(p.h)}</small>`).join('');
+    const html = `<div class="lc-plot"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="100" x2="100" y2="100" class="lc-base"/>` +
+      (pts.length > 1 ? `<polygon points="${pts[0].x},100 ${line} ${pts[pts.length - 1].x},100" class="lc-area"/><polyline points="${line}" class="lc-line"/>` : '') +
+      `</svg>${dots}</div><div class="lc-x">${xl}</div>`;
+      
     $('hourBars').innerHTML = html;
   } else $('hourBars').innerHTML = '<div class="empty">No sales yet today.</div>';
 
