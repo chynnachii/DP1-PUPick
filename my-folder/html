@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7a0000">
+  <title>PUPick</title>
+
+  <!-- ==================== FONTS & STYLES ==================== -->
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900,400i,700i&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ==================== KIOSK FRAME ==================== -->
+  <!-- renderScreen() in script.js fills #screen (each screen's header included) and the #fab label -->
+  <div class="kiosk">
+    <main id="screen" tabindex="-1" aria-live="polite"></main>
+    <button class="fab" id="fab" data-action="open-cart" aria-label="Open cart" hidden></button>
+  </div>
+
+  <!-- ==================== MODAL & TOAST ==================== -->
+  <!-- Filled by showModal() / toast(); focus is trapped in the modal while the overlay is visible -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <!-- ==================== SCRIPT ==================== -->
+  <script src="script.js"></script>
+</body>
+</html>
