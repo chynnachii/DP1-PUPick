@@ -27,8 +27,8 @@ const fmtDate = iso => new Date(iso).toLocaleDateString('en-US', { month: 'short
 const PAY_LABEL = { cash: 'Cash', ewallet: 'E-Wallet' };
 /* "View receipt" link beside an e-wallet payment, or a warning when no screenshot has been uploaded yet */
 const receiptLink = o => o.receipt_image
-  ? ` <button class="link-btn" data-receipt="${o.order_no}">View receipt</button>`
-  : (o.payment_method === 'ewallet' ? ' <small class="warn">No receipt yet</small>' : '');
+  ? ` <button class="receipt-btn" data-receipt="${o.order_no}">${icon('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>')}View receipt</button>`
+: (o.payment_method === 'ewallet' ? ' <small class="warn">No receipt yet</small>' : '');
 const icon = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
 const ICONS = {
   dashboard: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
@@ -228,12 +228,20 @@ async function loadFeedback() {
 }
 
 /* Settings page: stall details and the payment QR code */
+/* Store open/closed switch on the dashboard header */
+function renderStore() {
+  const open = !settings || settings.status === 'open';
+  $('storeSwitch').setAttribute('aria-checked', open);
+  $('storeToggle').classList.toggle('closed', !open);
+  $('storeLabel').textContent = open ? 'Store Open' : 'Store Closed';
+}
 function showQr(src) { $('qrPreview').hidden = !src; if (src) $('qrPreview').src = src; }
 function fillSettings() {
   if (!settings) return;
   $('sName').value = settings.stall_name; $('sDesc').value = settings.description || '';
-  $('sPrep').value = settings.prep_time_min; $('sStatus').value = settings.status;
+  $('sPrep').value = settings.prep_time_min;
   qrData = null; showQr(settings.qr_image);
+  renderStore();
 }
 async function loadSettings() {
   try { settings = await api.getSettings(); fillSettings(); } catch (err) { console.warn(err.message); }
@@ -319,6 +327,17 @@ $('refresh').addEventListener('click', () => {
   api.refresh(true);
 });
 $('rateChip').addEventListener('click', () => { page = 'feedback'; applyPage(); });
+$('storeToggle').addEventListener('click', async () => {
+  if (!settings || $('storeSwitch').disabled) return;
+  const next = settings.status === 'open' ? 'closed' : 'open';
+  $('storeSwitch').disabled = true;
+  try {
+    settings = await api.saveSettings({ ...settings, status: next });
+    renderStore();
+    toast(next === 'open' ? 'Store is now open' : 'Store is now closed');
+  } catch (err) { toast(err.message); }
+  $('storeSwitch').disabled = false;
+});
 $('bell').addEventListener('click', () => { alerts = 0; renderBell(); });
 
 $('sQr').addEventListener('change', e => {
@@ -335,7 +354,7 @@ $('setForm').addEventListener('submit', async e => {
   const name = $('sName').value.trim(), prep = +$('sPrep').value;
   if (!name || !(prep >= 1 && prep <= 120)) { toast('Enter a stall name and a prep time of 1 to 120 minutes'); return; }
   try {
-    settings = await api.saveSettings({ stall_name: name, description: $('sDesc').value.trim(), prep_time_min: prep, status: $('sStatus').value, qr_image: qrData || settings.qr_image });
+    settings = await api.saveSettings({ stall_name: name, description: $('sDesc').value.trim(), prep_time_min: prep, status: settings.status, qr_image: qrData || settings.qr_image });
     qrData = null;
     toast('Settings saved');
   } catch (err) { toast(err.message); }
@@ -418,7 +437,7 @@ function renderMenu() {
     <td><b>${esc(i.item_name)}</b><span class="d">${esc(i.description || '')}</span></td>
     <td>${esc(i.category)}</td><td>${money(i.price)}</td>
     <td><button class="switch" role="switch" aria-checked="${i.is_available}" data-avail="${i.menu_item_id}" aria-label="Available: ${esc(i.item_name)}"></button><span class="state">${i.is_available ? 'Available' : 'Hidden'}</span></td>
-    <td><button class="link-btn" data-edit="${i.menu_item_id}">Edit</button><button class="link-btn danger-t" data-del="${i.menu_item_id}">Remove</button></td></tr>`).join('')
+    <td class="row-acts"><button class="act-btn" data-edit="${i.menu_item_id}">${icon('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>')}Edit</button><button class="act-btn danger" data-del="${i.menu_item_id}">${icon('<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>')}Remove</button></td></tr>`).join('')
     : '<tr><td class="nothing" colspan="5">No menu items found. Click “Add Item” to create one.</td></tr>';
   $('mNote').textContent = `${menu.filter(i => i.is_available).length} of ${menu.length} items are available on the kiosk`;
 }

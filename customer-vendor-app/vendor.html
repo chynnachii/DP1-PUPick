@@ -71,6 +71,10 @@
           <p class="clock" id="clock"></p>
         </div>
         <div class="top-right">
+          <div class="store-toggle" id="storeToggle">
+            <button class="switch" id="storeSwitch" role="switch" aria-checked="true" aria-label="Store open or closed"></button>
+            <span id="storeLabel">Store Open</span>
+          </div>
           <button class="rate-chip" id="rateChip" aria-label="Stall rating. Open Feedback"></button>
           <button class="bell" id="bell" aria-label="Notifications">
             <svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 3 7 3 7H3s3-1 3-7zM10 20a2 2 0 004 0"/></svg>
@@ -215,8 +219,6 @@
           <input id="sDesc" maxlength="255">
           <div class="row2">
             <div><label for="sPrep">Prep time (minutes)</label><input id="sPrep" type="number" min="1" max="120"></div>
-            <div><label for="sStatus">Stall status</label>
-              <select id="sStatus"><option value="open">Open</option><option value="closed">Closed</option></select></div>
           </div>
           <label for="sQr">Payment QR code (e-wallet)</label>
           <img id="qrPreview" class="qr" alt="Payment QR preview" hidden>
